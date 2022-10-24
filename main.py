@@ -1,11 +1,13 @@
 import smtplib
+import unicodedata
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from smtplib import SMTP
 import csv
+import unicodedata
 
-email_sendler = "it1@lizing-p.ru"
-password = "r8CeMA@n5DOu"
+email_sendler = ""
+password = ""
 
 
 def send_mail():
@@ -15,6 +17,7 @@ def send_mail():
     #server.set_debuglevel(True)  # Включаем режим отладки - если отчет не нужен, строку можно закомментировать
     server.starttls()  # Начинаем шифрованный обмен по TLS
     server.login(email_sendler, password)  # Получаем доступ
+    exception: email.errors.MessageError
     email_getter = str(email)
     msg = MIMEMultipart()
     msg['From'] = email_sendler
@@ -38,11 +41,13 @@ def send_mail():
         </html>
     """
     msg.attach(MIMEText(html, 'html'))
-    server.send_message(msg)  # Отправляем сообщение
-    server.quit()
+    try:
+        server.send_message(msg)  # Отправляем сообщение
+    except:
+        print('Произошла какая-то ебанина')
+        server.quit()
 
-
-with open("contacts_file.csv") as file:
+with open("contacts_file.csv", encoding='cp1251') as file:
     reader = csv.reader(file)
     next(reader)  # Пропускаем первую строчку
     for name, email in reader:
