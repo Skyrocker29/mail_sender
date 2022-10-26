@@ -3,16 +3,18 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from smtplib import SMTP
 import csv
+import time
 import unicodedata
 
-email_sendler = "it1@lizing-p.ru"
-password = "r8CeMA@n5DOu"
+email_sendler = "info@pereychka.ru"
+password = "kH9eG1yU7z"
 
+eba = 'Произошла ошибка отправки'
 
 def send_mail():
-    smtp_server = smtplib.SMTP("mail.nic.ru", 587)
+    smtp_server = smtplib.SMTP("smtp.pereychka.ru", 587)
     smtp_server.starttls()
-    server: SMTP = smtplib.SMTP("mail.nic.ru", 587)  # Создаем объект SMTP
+    server: SMTP = smtplib.SMTP("smtp.pereychka.ru", 587)  # Создаем объект SMTP
     #server.set_debuglevel(True)  # Включаем режим отладки - если отчет не нужен, строку можно закомментировать
     server.starttls()  # Начинаем шифрованный обмен по TLS
     server.login(email_sendler, password)  # Получаем доступ
@@ -2125,19 +2127,26 @@ style="font-size:10.5pt;font-family:&quot;Cambria&quot;,serif;mso-bidi-font-fami
 </html>
 
     """
+
+
     msg.attach(MIMEText(html, 'html'))
     try:
         server.send_message(msg)  # Отправляем сообщение
     except:
-        print('Произошла какая-то ебанина')
-        writer.writerow({name},{email},'Произошел факт ебанины')
+        print (eba)
+        with open("end.txt", "a") as file:
+            file.writelines(name + ';' + email + ';' + 'Ошибка отправки' + '\n')
+    else:
+        with open("end.txt", "a") as file:
+            file.writelines(name + ';' + email + ';' + 'Отправлено' + '\n')
     server.quit()
 
 with open("contacts_file.csv", encoding='cp1251', newline='') as file:
     reader = csv.reader(file)
-    writer = csv.writer(file)
     next(reader)  # Пропускаем первую строчку
     for name, email in reader:
         print("Отправка письма для " + name)
-        # Код отправки на почту...
         send_mail()
+        time.sleep(3)
+
+        # Код отправки на почту...
